@@ -1,12 +1,11 @@
 const format = require('pg-format');
 const { pool } = require('../database/connection.js');
 
-const findAll = async ({ limit = 5, order_by = "id_ASC", page = 1 }) => {
+const findAll = async ({ limits = 6, order_by = "id_ASC", page = 1 }) => {
     const [field, direction] = order_by.split("_");
     const query = "SELECT * FROM inventario ORDER BY %s %s LIMIT %s OFFSET %s";
-    const offset = (page - 1) * limit;
-    const formattedQuery = format(query, field, direction, limit, offset);
-    console.log(formattedQuery);
+    const offset = (page - 1) * limits;
+    const formattedQuery = format(query, field, direction, limits, offset);
     const { rows } = await pool.query(formattedQuery);
     return rows;
     };
@@ -22,8 +21,8 @@ const filter = async({precio_max,precio_min,categoria,metal}) => {
     }
     if (precio_max) addFilter("precio","<=",precio_max);
     if (precio_min) addFilter("precio",">=",precio_min);
-    if (categoria) addFilter("categoria",">=",categoria);
-    if (metal) addFilter("metal",">=",metal);
+    if (categoria) addFilter("categoria","=",categoria);
+    if (metal) addFilter("metal","=",metal);
 
     if (filters.length>0){
         filters= filters.join(" AND ");

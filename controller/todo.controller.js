@@ -8,10 +8,15 @@ const prepareHATEOAS=(items)=>{
             name:i.nombre,
             href:`/jojas/joya/${i.id}`,
         }
-    }).slice(0,4)
+    })
     const total=items.length;
+    let stockoTotal=0;
+    items.forEach( item => {
+        stockoTotal += item.stock;
+      })
     const HATEOAS={
         total,
+        stockoTotal,
         results
     }
     return HATEOAS;
@@ -28,7 +33,6 @@ const readFiltered = async (req, res) => {
     const queryString = req.query;
     try {
     const  result = await todoModel.filter(queryString);
-    console.log(result)
     return res.json(result);
     } catch (error) {
     console.log(error);
@@ -47,7 +51,7 @@ const read = async (req, res) => {
     const result=prepareHATEOAS(all)
     return res.json(result);
     } catch (error) {
-    console.log(error);
+    
      if (error.code) {
         const { code, message } = getDatabaseError(error.code);
         return res.status(code).json({ message });
